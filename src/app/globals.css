@@ -224,6 +224,40 @@
     height: 100%;
   }
 
+  .logo-3d-mark-flat {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(
+      135deg,
+      var(--color-mutation) 0%,
+      var(--color-signal) 55%,
+      color-mix(in srgb, var(--ambient-secondary) 80%, var(--color-signal)) 100%
+    );
+    box-shadow:
+      0 0 12px color-mix(in srgb, var(--color-mutation) 35%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-bone) 25%, transparent);
+  }
+
+  .logo-3d-studio--flat {
+    font-style: italic;
+    color: var(--color-mutation);
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    filter: none;
+  }
+
+  .logo-3d--lite .logo-3d-inner {
+    transform: none;
+    will-change: auto;
+  }
+
+  .logo-3d--lite .logo-3d-studio-wrap {
+    transform: none;
+  }
+
   /* ── Shared 3D Prisms ── */
   .prism-3d {
     --prism-size: 1.65em;
@@ -1668,6 +1702,31 @@
   html.motion-mobile .prism-3d--spin .prism-cube,
   html.motion-mobile .prism-3d--spin .prism-diamond {
     animation: none;
+  }
+
+  html.motion-mobile .site-header-brand .logo-3d {
+    gap: 0.45rem;
+    max-width: calc(100vw - 7.5rem);
+  }
+
+  html.motion-mobile .site-header-brand .logo-3d--md .logo-3d-type {
+    font-size: 1.08rem;
+    white-space: nowrap;
+  }
+
+  html.motion-mobile .site-header-brand .logo-3d-mark {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  html.motion-mobile .hero-chapter .hero-distortion-css-mesh {
+    animation: none;
+    opacity: 0.32;
+  }
+
+  html.motion-mobile .hero-chapter .hero-distortion-css-grid {
+    opacity: 0.1;
   }
 
   html.motion-mobile .type-display-hero {

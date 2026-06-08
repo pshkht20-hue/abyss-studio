@@ -18,7 +18,6 @@ export function HeroScrollScene({ children }: HeroScrollSceneProps) {
       const root = pinRef.current;
       if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      const section = root.closest("section");
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 768px)", () => {
@@ -55,39 +54,6 @@ export function HeroScrollScene({ children }: HeroScrollSceneProps) {
         }
         if (orb) {
           tl.to(orb, { scale: 2.2, opacity: 0.75, ease: "none" }, 0);
-        }
-      });
-
-      /* Mobile: NO pin — pin-spacer caused the empty hole under header on iOS */
-      mm.add("(max-width: 767px)", () => {
-        const title = root.querySelector<HTMLElement>("[data-hero-title]");
-        const footer = root.querySelector<HTMLElement>("[data-hero-footer]");
-
-        if (title && section) {
-          gsap.to(title, {
-            opacity: 0.82,
-            y: -16,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: "bottom top+=30%",
-              scrub: true,
-            },
-          });
-        }
-        if (footer && section) {
-          gsap.to(footer, {
-            opacity: 0.35,
-            y: 12,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: "bottom top+=20%",
-              scrub: true,
-            },
-          });
         }
       });
 
