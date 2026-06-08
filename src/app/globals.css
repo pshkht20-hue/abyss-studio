@@ -1594,6 +1594,76 @@
   }
 }
 
+/* ── Mobile performance & motion lite ── */
+@media (max-width: 767px) {
+  html.motion-mobile {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html.motion-mobile [data-stanza] {
+    position: relative !important;
+    visibility: visible !important;
+  }
+
+  html.motion-mobile .ambient-mobile-mesh {
+    filter: blur(36px);
+    animation: none;
+  }
+
+  html.motion-mobile-lite .ambient-mobile-orb--b {
+    display: none;
+  }
+
+  html.motion-mobile .ambient-mobile-orb {
+    animation-duration: 22s;
+    filter: blur(40px);
+  }
+
+  html.motion-mobile .prism-3d--spin .prism-cube,
+  html.motion-mobile .prism-3d--spin .prism-diamond,
+  html.motion-mobile .prism-cube-core,
+  html.motion-mobile .prism-diamond-core {
+    animation-duration: 48s !important;
+  }
+
+  html.motion-mobile .logo-3d-depth {
+    display: none;
+  }
+
+  html.motion-mobile .type-display-hero {
+    font-size: clamp(2rem, 10.5vw, 3.35rem);
+    line-height: 1.12;
+  }
+
+  html.motion-mobile .type-display-section {
+    font-size: clamp(1.75rem, 8.5vw, 2.85rem);
+  }
+
+  html.motion-mobile .bento-cell {
+    transform: none !important;
+  }
+
+  html.motion-mobile .philosophy-stanzas {
+    min-height: auto;
+  }
+
+  html.motion-mobile .philosophy-stanza {
+    min-height: 78dvh;
+  }
+
+  html.motion-mobile .stanza-title {
+    font-size: clamp(36px, 14vw, 88px) !important;
+  }
+
+  html.motion-mobile .doc-header .hidden {
+    display: none;
+  }
+
+  html.motion-mobile .vhs-scan-line {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

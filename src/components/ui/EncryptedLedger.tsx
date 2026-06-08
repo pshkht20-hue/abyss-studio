@@ -38,13 +38,31 @@ export function EncryptedLedger({ count = 5 }: EncryptedLedgerProps) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    const intervalMs = mobile ? 900 : 340;
+    let visible = true;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+      },
+      { threshold: 0.05 },
+    );
+
+    const host = hashRefs.current[0]?.closest(".relative");
+    if (host) obs.observe(host);
+
     const id = window.setInterval(() => {
+      if (!visible) return;
       const idx = Math.floor(Math.random() * count);
       const el = hashRefs.current[idx];
       if (el) el.textContent = `0x${randomHash()}`;
-    }, 340);
+    }, intervalMs);
 
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      obs.disconnect();
+    };
   }, [count]);
 
   return (

@@ -22,8 +22,8 @@ export function DocumentHeader({
           />
           {status}
         </p>
-        <p className="hidden type-meta text-bone/50 md:block">First filed · {filed}</p>
-        <p className="hidden text-right type-meta text-bone/50 md:block">Revised · {revised}</p>
+        <p className="type-meta text-bone/50 max-md:hidden md:block">First filed · {filed}</p>
+        <p className="text-right type-meta text-bone/50 max-md:hidden md:block">Revised · {revised}</p>
       </div>
     </div>
   );

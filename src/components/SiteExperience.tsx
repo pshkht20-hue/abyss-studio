@@ -10,6 +10,7 @@ import { AmbientBackground } from "@/components/background/AmbientBackground";
 
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 
+import { MotionTierRoot } from "@/components/motion/MotionTierRoot";
 import { PaletteDriver } from "@/components/motion/PaletteDriver";
 
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
@@ -107,6 +108,8 @@ export function SiteExperience() {
       <SmoothScroll>
 
         <SkipLink />
+
+        <MotionTierRoot />
 
         <AmbientBackground />
 

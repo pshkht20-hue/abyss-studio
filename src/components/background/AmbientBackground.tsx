@@ -107,8 +107,8 @@ export function AmbientBackground() {
           <div ref={vignetteRef} className="ambient-vignette absolute inset-0" />
         </>
       )}
-      <div className="film-grain absolute inset-0" />
-      <div className="scanlines absolute inset-0 opacity-[0.035]" />
+      <div className="film-grain absolute inset-0 max-md:opacity-[0.03]" />
+      <div className="scanlines absolute inset-0 opacity-[0.035] max-md:hidden" />
     </div>
   );
 }

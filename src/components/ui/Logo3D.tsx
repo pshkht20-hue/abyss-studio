@@ -2,6 +2,7 @@
 
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { useRef } from "react";
+import { useIsMobile } from "@/hooks/use-media";
 import { Prism3D } from "@/components/scene3d/Prism3D";
 import { site } from "@/data/site";
 
@@ -15,7 +16,9 @@ const DEPTH_LAYERS = 5;
 
 export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3DProps) {
   const reduced = useReducedMotion();
+  const isMobile = useIsMobile();
   const ref = useRef<HTMLAnchorElement>(null);
+  const liteMotion = reduced || isMobile;
   const rotateX = useSpring(0, { stiffness: 120, damping: 20 });
   const rotateY = useSpring(0, { stiffness: 120, damping: 20 });
   const glowX = useSpring(50, { stiffness: 100, damping: 22 });
@@ -24,7 +27,7 @@ export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3D
   const glowPos = useMotionTemplate`${glowX}% 50%`;
 
   const onMove = (e: React.PointerEvent) => {
-    if (reduced) return;
+    if (liteMotion) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -56,12 +59,12 @@ export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3D
       onPointerMove={onMove}
       onPointerLeave={onLeave}
     >
-      <motion.div className="logo-3d-inner" style={reduced ? undefined : { transform }}>
+      <motion.div className="logo-3d-inner" style={liteMotion ? undefined : { transform }}>
         <div className="logo-3d-mark">
           <Prism3D
             size={prismSize}
             spinDuration={spinDuration}
-            spin={!reduced}
+            spin={!liteMotion}
             className="logo-prism-wrap"
           />
         </div>
@@ -83,7 +86,7 @@ export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3D
             <motion.span
               className="logo-3d-studio"
               style={
-                reduced
+                liteMotion
                   ? undefined
                   : { backgroundPosition: glowPos, backgroundSize: "200% 100%" }
               }

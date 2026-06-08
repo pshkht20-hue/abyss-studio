@@ -45,9 +45,25 @@ export function SplitWords({
         spans.push(inner);
       });
 
-      gsap.set(spans, { yPercent: 108, opacity: 0, rotateX: 10, transformOrigin: "50% 100%" });
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+
+      if (mobile) {
+        gsap.set(spans, { yPercent: 42, opacity: 0 });
+      } else {
+        gsap.set(spans, { yPercent: 108, opacity: 0, rotateX: 10, transformOrigin: "50% 100%" });
+      }
 
       const play = () => {
+        if (mobile) {
+          gsap.to(spans, {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.72,
+            stagger: 0.055,
+            ease: "power2.out",
+          });
+          return;
+        }
         gsap.to(spans, {
           yPercent: 0,
           opacity: 1,

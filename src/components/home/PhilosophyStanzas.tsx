@@ -28,6 +28,7 @@ export function PhilosophyStanzas() {
       }
 
       const mm = gsap.matchMedia();
+      const observers: IntersectionObserver[] = [];
 
       mm.add("(min-width: 768px)", () => {
         const stanzas = gsap.utils.toArray<HTMLElement>("[data-stanza]", root);
@@ -87,12 +88,63 @@ export function PhilosophyStanzas() {
       });
 
       mm.add("(max-width: 767px)", () => {
-        gsap.utils.toArray<HTMLElement>("[data-stanza]", root).forEach((node) => {
-          gsap.set(node, { autoAlpha: 1, position: "relative" });
+        const stanzas = gsap.utils.toArray<HTMLElement>("[data-stanza]", root);
+        const section = root.closest(".philosophy-stanzas");
+
+        stanzas.forEach((node) => {
+          gsap.set(node, { autoAlpha: 1, clearProps: "visibility" });
+          const chars = node.querySelectorAll(".stanza-char");
+          gsap.set(chars, { yPercent: 28, opacity: 0 });
         });
+
+        const revealStanza = (node: HTMLElement) => {
+          const chars = node.querySelectorAll(".stanza-char");
+          gsap.to(chars, {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.62,
+            stagger: 0.022,
+            ease: "power2.out",
+          });
+        };
+
+        stanzas.forEach((node, i) => {
+          if (i === 0) {
+            revealStanza(node);
+            return;
+          }
+
+          const obs = new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                revealStanza(node);
+                obs.disconnect();
+              }
+            },
+            { threshold: 0.28, rootMargin: "0px 0px -8% 0px" },
+          );
+          obs.observe(node);
+          observers.push(obs);
+        });
+
+        if (section && bar) {
+          const progressObs = new IntersectionObserver(
+            (entries) => {
+              const visible = entries.filter((e) => e.isIntersecting).length;
+              const ratio = visible / Math.max(stanzas.length, 1);
+              bar.style.transform = `scaleX(${Math.min(1, ratio * 1.15)})`;
+            },
+            { threshold: [0, 0.25, 0.5, 0.75, 1] },
+          );
+          stanzas.forEach((node) => progressObs.observe(node));
+          observers.push(progressObs);
+        }
       });
 
-      return () => mm.revert();
+      return () => {
+        observers.forEach((obs) => obs.disconnect());
+        mm.revert();
+      };
     },
     { scope: rootRef },
   );
@@ -100,9 +152,9 @@ export function PhilosophyStanzas() {
   return (
     <section
       id="philosophy"
-      className="philosophy-stanzas relative z-10 min-h-[100dvh] overflow-x-clip overflow-y-visible border-y border-hairline bg-ink md:min-h-dvh"
+      className="philosophy-stanzas relative z-10 min-h-0 overflow-x-clip overflow-y-visible border-y border-hairline bg-ink md:min-h-[100dvh]"
     >
-      <div className="terminal-grid pointer-events-none absolute inset-0 opacity-25" aria-hidden />
+      <div className="terminal-grid pointer-events-none absolute inset-0 opacity-25 max-md:opacity-15" aria-hidden />
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
@@ -123,13 +175,13 @@ export function PhilosophyStanzas() {
 
       <div
         ref={rootRef}
-        className="relative flex min-h-[calc(100dvh-52px)] items-center justify-center overflow-visible px-4 py-14 md:min-h-[calc(100dvh-56px)] md:px-10 md:py-20"
+        className="philosophy-stanzas-inner relative flex flex-col md:min-h-[calc(100dvh-56px)] md:items-center md:justify-center md:px-10 md:py-20"
       >
         {philosophyStanzas.map((stanza, i) => (
           <div
             key={stanza.codename}
             data-stanza
-            className="absolute inset-0 flex flex-col items-center justify-center overflow-visible px-4 py-10 text-center md:px-10 md:py-14"
+            className="philosophy-stanza relative flex min-h-[78dvh] flex-col items-center justify-center px-4 py-16 text-center md:absolute md:inset-0 md:min-h-0 md:px-10 md:py-14"
             style={{ visibility: i === 0 ? "visible" : "hidden" }}
           >
             <p className="type-meta-accent mb-6">
@@ -152,14 +204,14 @@ export function PhilosophyStanzas() {
             </h2>
             <DecryptLine
               text={stanza.caption}
-              delay={i * 140}
+              delay={i * 80}
               className="stanza-caption mt-8 max-w-xl font-mono text-[11px] leading-relaxed tracking-[0.22em] text-bone/60 uppercase md:text-xs"
             />
           </div>
         ))}
       </div>
 
-      <div className="absolute right-0 bottom-0 left-0 z-10 border-t border-hairline">
+      <div className="absolute right-0 bottom-0 left-0 z-10 border-t border-hairline md:relative">
         <div className="flex items-center justify-between px-6 py-3 font-mono text-[10px] tracking-[0.28em] text-bone/70 uppercase md:px-10">
           <span>Reading protocol</span>
           <span className="text-mutation">●</span>

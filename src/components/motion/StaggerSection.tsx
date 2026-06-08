@@ -27,14 +27,17 @@ export function StaggerSection({
       const items = root.querySelectorAll(childSelector);
       if (!items.length) return;
 
-      gsap.set(items, { opacity: 0, y: 32 });
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      const offsetY = mobile ? 22 : 32;
+
+      gsap.set(items, { opacity: 0, y: offsetY });
 
       const play = () => {
         gsap.to(items, {
           opacity: 1,
           y: 0,
-          duration: 0.85,
-          stagger: 0.1,
+          duration: mobile ? 0.68 : 0.85,
+          stagger: mobile ? 0.07 : 0.1,
           ease: "power3.out",
         });
       };

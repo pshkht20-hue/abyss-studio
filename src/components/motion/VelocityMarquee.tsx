@@ -28,6 +28,8 @@ export function VelocityMarquee({
       return;
     }
 
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    const velocityScale = mobile ? 0.72 : 1;
     const direction = -1;
     const half = () => track.scrollWidth / 2;
 
@@ -43,7 +45,7 @@ export function VelocityMarquee({
       const halfW = half();
       if (halfW <= 0) return;
 
-      s.x += (baseVelocity * direction + s.velocityBoost) * dt;
+      s.x += (baseVelocity * velocityScale * direction + s.velocityBoost * velocityScale) * dt;
       if (s.x <= -halfW) s.x += halfW;
       if (s.x >= 0) s.x -= halfW;
       track.style.transform = `translate3d(${s.x.toFixed(2)}px,0,0)`;

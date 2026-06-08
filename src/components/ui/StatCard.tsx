@@ -26,7 +26,8 @@ export function StatCard({ label, value, suffix = "", decimals = 0 }: StatCardPr
         ran.current = true;
 
         const start = performance.now();
-        const duration = 1600;
+        const mobile = window.matchMedia("(max-width: 767px)").matches;
+        const duration = mobile ? 1100 : 1600;
 
         const tick = (now: number) => {
           const t = Math.min(1, (now - start) / duration);

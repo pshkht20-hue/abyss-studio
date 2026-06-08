@@ -97,6 +97,7 @@ export function PaletteDriver() {
     window.addEventListener("resize", onResize, { passive: true });
 
     const unsub = motionBus.subscribe((dt) => {
+      if (!ambientStore.visible) return;
       if (!nodes.length) collectNodes();
       resolveChapterBlend(nodes);
       ambientStore.setHeroInView(ambientStore.scrollProgress < HERO_LOD_THRESHOLD);

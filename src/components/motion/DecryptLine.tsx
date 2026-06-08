@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 import { registerGsap } from "@/lib/gsap/register";
+import { shouldUseScrollScrub } from "@/lib/motion-tier";
 
 const CHARSET = "!<>-_\\/[]{}=+*^?#0123456789ABCDEF";
 
@@ -82,6 +83,8 @@ export function DecryptLine({
       if (!el) return;
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const effectiveMode = shouldUseScrollScrub() ? mode : "reveal";
+      const revealDuration = shouldUseScrollScrub() ? 1.35 : 1.05;
       const chars = Array.from(text);
       const spans: HTMLSpanElement[] = [];
 
@@ -135,7 +138,7 @@ export function DecryptLine({
         tl?.kill();
         tl = gsap.to(state, {
           p: 1,
-          duration: 1.35,
+          duration: revealDuration,
           ease: "power2.out",
           onUpdate: () => applyDecryptProgress(state.p, meta, spans),
           onComplete: () => settleAll(meta, spans),
@@ -150,7 +153,7 @@ export function DecryptLine({
 
       document.addEventListener("declassify-all", revealAll);
 
-      if (mode === "scrub") {
+      if (effectiveMode === "scrub") {
         st = ScrollTrigger.create({
           trigger: el,
           start,
