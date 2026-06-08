@@ -14,7 +14,7 @@ export function Footer() {
   return (
     <footer className="relative border-t border-hairline">
       <FooterMarquee />
-      <div className="px-6 py-20 md:px-10 md:py-28">
+      <div className="px-6 py-12 md:px-10 md:py-28">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-14 md:grid-cols-12">
             <div className="md:col-span-5">
@@ -68,7 +68,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="mt-24 border-t border-hairline-soft pt-16">
+          <div className="mt-14 border-t border-hairline-soft pt-10 md:mt-24 md:pt-16">
             <Logo3D size="lg" showBuild={false} className="footer-logo" />
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
               <DecryptLine

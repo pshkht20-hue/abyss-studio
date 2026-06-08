@@ -57,7 +57,7 @@ export function Header() {
 
         <div className="site-header-inner">
           <div className="site-header-brand">
-            <Logo3D size="sm" className="site-header-logo" />
+            <Logo3D size="md" className="site-header-logo" />
             <div className="site-header-meta hidden lg:flex">
               <span className="signal-dot scale-75" />
               <span>Signal · Active</span>
