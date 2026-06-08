@@ -1,0 +1,32 @@
+---
+description: Auto commit and push after code changes — Vercel deploy without user action
+alwaysApply: true
+---
+
+# OFM Auto Deploy (commit + push)
+
+User delegates deploy: after **substantive code changes**, agent commits and pushes to `main` so Vercel updates automatically. Do not ask user to push manually.
+
+## Required workflow after code edits
+
+1. **Verify** — `npm run build` must pass before push (skip for docs-only if build unchanged).
+2. **Safety scan** — never stage:
+   - `.credentials/`, `.env`, `.env.local`, `oauth-token.json`, `oauth-client.json`
+   - API keys, tokens, passwords, `TELEGRAM_*` values in source
+3. **Commit** — conventional format: `feat:`, `fix:`, `docs:`, `chore:` — clear one-line why.
+4. **Push** — `git push origin main` (no `--force`, no amend after remote push).
+5. **Confirm** — tell user commit hash + that Vercel will deploy (~1–2 min).
+
+## When NOT to commit
+
+- Question-only / review-only (no files changed)
+- User explicitly says "don't commit" or "only plan"
+- Build fails — fix first, then commit
+- Only untracked junk (`.cursor` local state) — commit only project-relevant files
+
+## Quality bar (user trusts you — earn it)
+
+- Minimal diffs; match existing patterns
+- i18n: edit all 4 locales for user-facing copy
+- No secrets in commit; rotate if accidentally exposed
+- Prefer small focused commits over giant batches when tasks are unrelated

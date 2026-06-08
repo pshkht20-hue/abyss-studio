@@ -1,0 +1,50 @@
+# Abyss Studio — Animation & 3D Stack
+
+Проект **Abyss** (не OFM). Цель: immersive WebGL как [joseph-san.com](https://joseph-san.com/).
+
+## Обязательный порядок чтения скиллов
+
+### Роутер
+1. `ofm-animation-mastery` — decision tree GSAP / Framer / 3D
+2. `3d-web-experience` — immersive 3D сайты (если установлен)
+3. `premium-frontend-ui` — эстетика и staging (если установлен)
+
+### Scroll + narrative (как joseph-san)
+| Задача | Скилл |
+|--------|-------|
+| Pin, scrub, horizontal, ScrollSmoother | `gsap-scrolltrigger` (user) + `gsap-framer-scroll-animation` |
+| Lenis + GSAP sync | `gsap-framer-scroll-animation` references/gsap.md |
+| Framer whileInView, gestures | `framer-motion-animator`, `motion-ui` |
+| Disney staging, appeal | `12-principles-of-animation` |
+
+### 3D / WebGL (акула, океан)
+| Задача | Скилл |
+|--------|-------|
+| Сцена, камера, fog | `threejs-fundamentals` |
+| GLTF акула + анимация плавания | `threejs-loaders`, `threejs-animation` |
+| Свет, god rays | `threejs-lighting` |
+| Вода, caustics, rim | `threejs-shaders`, `threejs-materials` |
+| Bloom, vignette (лёгкий) | `threejs-postprocessing` |
+| R3F в Next.js | `react-three-fiber`, `gsap-react` |
+| GLB pipeline Blender→web | `blender-web-pipeline` (если установлен) |
+
+### Дизайн UI поверх 3D
+| Задача | Скилл |
+|--------|-------|
+| Типографика, spacing, polish | `make-interfaces-feel-better` |
+| UX/a11y audit | `web-design-guidelines` |
+| Motion design | `animation-designer`, `web-animation-design` (если установлен) |
+
+### Performance
+| Задача | Скилл |
+|--------|-------|
+| R3F без re-render на scroll | `gsap-performance`, `vercel-react-best-practices` |
+| Mobile ≤767px | CSS fallback, no 3D pin, `dpr` max 1.5 |
+
+## Запреты для Abyss
+- Процедурная «капсула» вместо GLTF-акулы на desktop
+- `filter: blur()` в GSAP на mobile
+- DepthOfField postprocessing (мылит картинку)
+- Правки в `../ofm-model-agency/`
+
+## Порт dev: 3001 (OFM = 3000)

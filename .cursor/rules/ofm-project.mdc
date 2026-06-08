@@ -1,0 +1,17 @@
+---
+description: "OFM Model Agency — Next.js site conventions (ofmmodels.com)"
+globs: ["**/*.tsx", "**/*.ts", "**/*.css", "**/messages/*.json"]
+alwaysApply: true
+---
+
+# OFM Model Agency
+
+- Stack: Next.js 16, React 19, Tailwind 4, next-intl (ru default, uk/en/es), GSAP + Framer Motion.
+- Hero: GSAP only; mobile (≤767px) — no blur, no heavy 3D, lighter timelines.
+- Sections below hero: prefer Framer Motion; complex scroll — GSAP ScrollTrigger.
+- Brand: accent-pink, accent-violet, accent-cyan; cosmic/neon aesthetic.
+- i18n: edit all 4 locale files when changing user-facing copy.
+- SEO site uses OnlyFans terminology; ad-safe landing pages must stay SFW (no OF in H1).
+- Gross total disclaimers on income figures — never promise net payout.
+- Do not add Three.js without explicit request (perf on mobile).
+- Prefer minimal diffs; match existing component patterns.

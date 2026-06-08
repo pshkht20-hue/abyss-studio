@@ -1,0 +1,30 @@
+---
+description: Premium OFM agency standards — motion, conversion, brand, i18n
+alwaysApply: true
+---
+
+# OFM Premium Agency
+
+## Brand & copy
+- Accent: pink `#ff5bb5`, violet `#a855f7`, cyan `#00d4ff` on `#050508`
+- Income figures: **gross total** disclaimers — never promise net payout
+- User-facing JSON copy: edit all 4 locales (`messages/ru.json`, `uk.json`, `en.json`, `es.json`)
+
+## Motion
+- Router: `ofm-animation-mastery` for complex/3D work
+- Hero: GSAP only; use `ofm-premium-motion` skill for new animation work
+- Framer: `framer-motion-animator` + `animation-designer` for sections/gestures
+- 3D: `threejs-*` + `react-three-fiber` when user requests — lazy-load, no 3D on mobile ≤767px
+- ScrollTrigger: max 6 instances; no blur tweens; mobile ≤767px lite
+- All Framer components: `useReducedMotion()` gate
+
+## Conversion
+- Primary CTA → `#contact` → Telegram application API
+- Calculator result should bridge to contact form when possible
+- Use `ofm-conversion-audit` skill before major UX changes
+
+## Quality
+- Prefer minimal diffs; match existing patterns in `components/`
+- Run `npm run build` after substantive changes
+- Use `ofm-deep-site-audit` skill for full-site analysis requests
+- React perf: `vercel-react-best-practices` · UI audit: `web-design-guidelines` · Router: `skill-library`

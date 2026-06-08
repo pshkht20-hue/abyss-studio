@@ -1,0 +1,28 @@
+# Abyss Studio — отдельно от OFM
+
+Этот проект (`premium-site-starter` / Abyss Studio) **не связан** с `ofm-model-agency`.
+
+## Жёсткие правила
+
+- **Никогда** не редактировать файлы в `../ofm-model-agency/`
+- **Никогда** не коммитить/пушить в git OFM из этой папки (здесь нет `.git`)
+- **Порт dev:** `3001` — OFM использует `3000`
+- **Деплой:** отдельный Vercel-проект, когда будет готов (не ofmmodels.com)
+- Общие только **user-level skills** (`~/.agents/skills`) — это не мешает OFM
+
+## Запуск
+
+```powershell
+cd c:\Users\User\ofm-agency\premium-site-starter
+npm run dev
+# → http://localhost:3001
+```
+
+## OFM (другой проект)
+
+```powershell
+cd c:\Users\User\ofm-agency\ofm-model-agency
+npm install   # если node_modules удалён
+npm run dev
+# → http://localhost:3000
+```
