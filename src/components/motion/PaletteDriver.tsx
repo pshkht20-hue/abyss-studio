@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { ambientStore } from "@/lib/ambient-store";
 import { CHAPTER_ORDER, smoothstep } from "@/lib/chapter-palettes";
+import { getMotionTier, isMobileTier } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
 
 const FOCAL_RATIO = 0.4;
@@ -69,6 +70,7 @@ function resolveChapterBlend(nodes: HTMLElement[]) {
 export function PaletteDriver() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = isMobileTier(getMotionTier());
 
     let nodes: HTMLElement[] = [];
 
@@ -96,11 +98,24 @@ export function PaletteDriver() {
     };
     window.addEventListener("resize", onResize, { passive: true });
 
-    const unsub = motionBus.subscribe((dt) => {
-      if (!ambientStore.visible) return;
+    const onScroll = () => {
       if (!nodes.length) collectNodes();
       resolveChapterBlend(nodes);
       ambientStore.setHeroInView(ambientStore.scrollProgress < HERO_LOD_THRESHOLD);
+    };
+
+    if (mobile) {
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+
+    const unsub = motionBus.subscribe((dt) => {
+      if (!ambientStore.visible) return;
+      if (!mobile) {
+        if (!nodes.length) collectNodes();
+        resolveChapterBlend(nodes);
+        ambientStore.setHeroInView(ambientStore.scrollProgress < HERO_LOD_THRESHOLD);
+      }
       ambientStore.tickPalette(dt);
       ambientStore.applyPaletteToDocument();
     });
@@ -108,6 +123,7 @@ export function PaletteDriver() {
     return () => {
       unsub();
       window.removeEventListener("resize", onResize);
+      if (mobile) window.removeEventListener("scroll", onScroll);
       invalidateRectCache();
     };
   }, []);

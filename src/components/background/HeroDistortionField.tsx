@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ambientStore } from "@/lib/ambient-store";
 import { chapterSceneIndex } from "@/lib/chapter-scene-index";
 import {
@@ -9,6 +9,7 @@ import {
   prefersReducedMotion,
   supportsWebGL,
 } from "@/lib/background-capabilities";
+import { canRunWebGLAmbient } from "@/lib/motion-tier";
 import {
   HERO_DISTORTION_FRAGMENT,
   HERO_DISTORTION_VERTEX,
@@ -30,28 +31,58 @@ type HeroDistortionFieldProps = {
   onReady?: () => void;
 };
 
+type RenderMode = "pending" | "webgl" | "css" | "off";
+
 export function HeroDistortionField({ onReady }: HeroDistortionFieldProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const readyRef = useRef(false);
   const onReadyRef = useRef(onReady);
+  const [mode, setMode] = useState<RenderMode>("pending");
 
   useEffect(() => {
     onReadyRef.current = onReady;
   }, [onReady]);
 
   useEffect(() => {
-    const host = hostRef.current;
-    const canvas = canvasRef.current;
-    if (!host || !canvas) return;
-
-    if (prefersReducedMotion() || isMobileViewport() || !supportsWebGL()) {
+    if (prefersReducedMotion()) {
+      setMode("off");
       if (!readyRef.current) {
         readyRef.current = true;
         onReadyRef.current?.();
       }
       return;
     }
+    if (canRunWebGLAmbient() && supportsWebGL() && !isMobileViewport()) {
+      setMode("webgl");
+      return;
+    }
+    setMode("css");
+    if (!readyRef.current) {
+      readyRef.current = true;
+      onReadyRef.current?.();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mode !== "css") return;
+    const host = hostRef.current;
+    if (!host) return;
+
+    const apply = () => {
+      host.style.setProperty("--hero-distort-scroll", String(ambientStore.scrollProgress));
+      host.style.setProperty("--hero-distort-vel", String(ambientStore.scrollVelocity));
+    };
+    apply();
+    return ambientStore.subscribe(apply);
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "webgl") return;
+
+    const host = hostRef.current;
+    const canvas = canvasRef.current;
+    if (!host || !canvas) return;
 
     const gl = canvas.getContext("webgl", {
       alpha: true,
@@ -59,30 +90,27 @@ export function HeroDistortionField({ onReady }: HeroDistortionFieldProps) {
       powerPreference: isLowEndDevice() ? "low-power" : "high-performance",
     });
     if (!gl) {
-      if (!readyRef.current) {
-        readyRef.current = true;
-        onReadyRef.current?.();
-      }
+      setMode("css");
       return;
     }
 
     const vs = compileShader(gl, gl.VERTEX_SHADER, HERO_DISTORTION_VERTEX);
     const fs = compileShader(gl, gl.FRAGMENT_SHADER, HERO_DISTORTION_FRAGMENT);
     if (!vs || !fs) {
-      onReadyRef.current?.();
+      setMode("css");
       return;
     }
 
     const program = gl.createProgram();
     if (!program) {
-      onReadyRef.current?.();
+      setMode("css");
       return;
     }
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      onReadyRef.current?.();
+      setMode("css");
       return;
     }
 
@@ -176,15 +204,24 @@ export function HeroDistortionField({ onReady }: HeroDistortionFieldProps) {
       window.removeEventListener("pointermove", onPointer);
       gl.deleteProgram(program);
     };
-  }, []);
+  }, [mode]);
+
+  if (mode === "off") return null;
 
   return (
     <div
       ref={hostRef}
-      className="hero-distortion-host pointer-events-none absolute inset-0 z-0 hidden md:block"
+      className={`hero-distortion-host pointer-events-none absolute inset-0 z-0 ${mode === "css" ? "hero-distortion-host--css" : ""}`}
       aria-hidden
     >
-      <canvas ref={canvasRef} className="hero-distortion-canvas h-full w-full" />
+      {mode === "css" ? (
+        <>
+          <div className="hero-distortion-css-mesh" />
+          <div className="hero-distortion-css-grid" />
+        </>
+      ) : mode === "webgl" ? (
+        <canvas ref={canvasRef} className="hero-distortion-canvas h-full w-full" />
+      ) : null}
     </div>
   );
 }

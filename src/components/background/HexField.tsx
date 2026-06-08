@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { ambientStore } from "@/lib/ambient-store";
-import { getMotionTier } from "@/lib/motion-tier";
+import { getMotionTier, isAmbientTier } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
 
 export function HexField() {
@@ -10,19 +10,22 @@ export function HexField() {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || getMotionTier() !== "desktop") return;
+    const tier = getMotionTier();
+    if (!el || !isAmbientTier(tier)) return;
+
+    const k = tier === "mobile" ? 0.55 : 1;
 
     return motionBus.subscribe(() => {
       const { scrollProgress, pointer, scrollVelocity } = ambientStore;
-      const rot = scrollProgress * 3 + pointer.x * 4;
-      const scale = 1 + scrollVelocity * 0.08;
+      const rot = (scrollProgress * 3 + pointer.x * 4) * k;
+      const scale = 1 + scrollVelocity * 0.08 * k;
       el.style.transform = `translate3d(${(pointer.x - 0.5) * -20}px, ${scrollProgress * -80}px, 0) rotate(${rot}deg) scale(${scale})`;
       el.style.opacity = String(0.22 + scrollProgress * 0.12 + scrollVelocity * 0.08);
     });
   }, []);
 
   return (
-    <div ref={ref} className="hex-field pointer-events-none absolute inset-[-15%] hidden md:block" aria-hidden>
+    <div ref={ref} className="hex-field pointer-events-none absolute inset-[-15%] max-md:opacity-70" aria-hidden>
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern

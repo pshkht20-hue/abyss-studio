@@ -1594,40 +1594,57 @@
   }
 }
 
-/* ── Mobile performance & motion lite ── */
+/* ── Hero distortion CSS fallback (mobile) ── */
+.hero-distortion-host--css {
+  overflow: hidden;
+}
+
+.hero-distortion-css-mesh {
+  position: absolute;
+  inset: -25%;
+  opacity: calc(0.42 + var(--hero-distort-scroll, 0) * 0.2);
+  background:
+    radial-gradient(
+      ellipse 70% 55% at calc(48% + var(--hero-distort-vel, 0) * 8%) 38%,
+      color-mix(in srgb, var(--ambient-primary) 28%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 62% 62%,
+      color-mix(in srgb, var(--ambient-glow) 18%, transparent),
+      transparent 60%
+    );
+  transform: translate3d(0, calc(var(--hero-distort-scroll, 0) * -4%), 0)
+    scale(calc(1 + var(--hero-distort-vel, 0) * 0.06));
+  animation: heroDistortionDrift 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.hero-distortion-css-grid {
+  position: absolute;
+  inset: -15%;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ambient-secondary) 35%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ambient-secondary) 35%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: translate3d(0, calc(var(--hero-distort-scroll, 0) * -8%), 0)
+    skewY(calc(var(--hero-distort-vel, 0) * 2deg));
+}
+
+@keyframes heroDistortionDrift {
+  from {
+    transform: translate3d(-1%, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, -2%, 0) scale(1.03);
+  }
+}
+
+/* ── Mobile performance & full ambient ── */
 @media (max-width: 767px) {
   html.motion-mobile {
     -webkit-tap-highlight-color: transparent;
-  }
-
-  html.motion-mobile [data-stanza] {
-    position: relative !important;
-    visibility: visible !important;
-  }
-
-  html.motion-mobile .ambient-mobile-mesh {
-    filter: blur(36px);
-    animation: none;
-  }
-
-  html.motion-mobile-lite .ambient-mobile-orb--b {
-    display: none;
-  }
-
-  html.motion-mobile .ambient-mobile-orb {
-    animation-duration: 22s;
-    filter: blur(40px);
-  }
-
-  html.motion-mobile .prism-3d--spin .prism-cube,
-  html.motion-mobile .prism-3d--spin .prism-diamond,
-  html.motion-mobile .prism-cube-core,
-  html.motion-mobile .prism-diamond-core {
-    animation-duration: 48s !important;
-  }
-
-  html.motion-mobile .logo-3d-depth {
-    display: none;
   }
 
   html.motion-mobile .type-display-hero {
@@ -1639,18 +1656,6 @@
     font-size: clamp(1.75rem, 8.5vw, 2.85rem);
   }
 
-  html.motion-mobile .bento-cell {
-    transform: none !important;
-  }
-
-  html.motion-mobile .philosophy-stanzas {
-    min-height: auto;
-  }
-
-  html.motion-mobile .philosophy-stanza {
-    min-height: 78dvh;
-  }
-
   html.motion-mobile .stanza-title {
     font-size: clamp(36px, 14vw, 88px) !important;
   }
@@ -1659,7 +1664,28 @@
     display: none;
   }
 
-  html.motion-mobile .vhs-scan-line {
+  html.motion-mobile .animate-marquee {
+    animation-duration: 52s;
+  }
+
+  /* Low-end devices only — strip expensive blurs */
+  html.motion-mobile-lite .ambient-mobile-mesh {
+    filter: none;
+    animation: none;
+    opacity: 0.35;
+  }
+
+  html.motion-mobile-lite .ambient-mobile-orb--b {
+    display: none;
+  }
+
+  html.motion-mobile-lite .ambient-mobile-orb {
+    filter: none;
+    opacity: 0.22;
+    animation-duration: 24s;
+  }
+
+  html.motion-mobile-lite .film-grain {
     display: none;
   }
 }

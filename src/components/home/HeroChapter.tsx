@@ -25,9 +25,9 @@ export function HeroChapter({ onDistortionReady }: HeroChapterProps) {
   const reduced = useReducedMotion();
 
   useEffect(() => {
-    const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (mobile || motionReduced) onDistortionReady?.();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onDistortionReady?.();
+    }
   }, [onDistortionReady]);
 
   return (
@@ -49,7 +49,7 @@ export function HeroChapter({ onDistortionReady }: HeroChapterProps) {
         <FloatingFragments />
         <ParallaxLayer
           speed={0.08}
-          className="pointer-events-none absolute -right-16 top-28 hidden h-72 w-72 md:block"
+          className="pointer-events-none absolute -right-8 top-24 h-40 w-40 max-md:opacity-70 md:-right-16 md:top-28 md:h-72 md:w-72"
         >
           <div data-hero-orb className="ambient-orb h-full w-full" />
         </ParallaxLayer>

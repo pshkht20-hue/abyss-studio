@@ -48,7 +48,7 @@ export function StatCard({ label, value, suffix = "", decimals = 0 }: StatCardPr
 
   return (
     <div ref={ref} data-stagger className="stat-panel relative p-6 md:p-7">
-      <div className="stat-prism-accent pointer-events-none absolute top-4 right-4 hidden md:block" aria-hidden>
+      <div className="stat-prism-accent pointer-events-none absolute top-4 right-4 max-md:scale-75 max-md:opacity-80" aria-hidden>
         <Prism3D size="20px" variant="cube" spinDuration={18} />
       </div>
       <CornerBracket size="sm" />

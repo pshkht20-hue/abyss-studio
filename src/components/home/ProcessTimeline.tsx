@@ -26,7 +26,7 @@ export function ProcessTimeline() {
           <div className="space-y-14">
             {processSteps.map((step) => (
               <div key={step.step} data-stagger className="relative md:pl-20">
-                <div className="timeline-prism-node absolute left-[-2px] hidden md:block">
+                <div className="timeline-prism-node absolute left-[-2px] max-md:scale-75 max-md:opacity-80">
                   <Prism3D size="32px" variant="diamond" spinDuration={24 + parseInt(step.step, 10) * 2} />
                 </div>
                 <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">

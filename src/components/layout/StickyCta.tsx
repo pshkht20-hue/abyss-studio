@@ -16,7 +16,7 @@ export function StickyCta() {
   if (!visible) return null;
 
   return (
-    <div className="sticky-cta fixed right-0 bottom-0 left-0 z-40 border-t border-hairline bg-ink/95 p-3 backdrop-blur-md md:hidden">
+    <div className="sticky-cta fixed right-0 bottom-0 left-0 z-40 border-t border-hairline bg-ink/98 p-3 md:hidden">
       <a href="#vault" className="btn-glow block w-full py-3.5 text-center" data-cursor="open">
         {site.cta} →
       </a>

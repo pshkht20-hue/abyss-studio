@@ -62,7 +62,7 @@ export function VaultContact() {
   return (
     <VhsSection id="vault" data-chapter="VAULT" className="relative px-6 py-24 md:px-10 md:py-36">
       <SectionWatermark className="right-4 top-8 md:right-10 md:top-12">05</SectionWatermark>
-      <div className="vault-prism-accent pointer-events-none absolute bottom-16 left-8 hidden md:block" aria-hidden>
+      <div className="vault-prism-accent pointer-events-none absolute bottom-16 left-8 max-md:scale-75 max-md:opacity-80" aria-hidden>
         <Prism3D size="64px" variant="diamond" spinDuration={36} />
       </div>
       <div className="relative mx-auto grid max-w-7xl grid-cols-12 gap-10">

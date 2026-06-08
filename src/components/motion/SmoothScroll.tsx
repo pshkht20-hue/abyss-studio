@@ -52,11 +52,23 @@ export function SmoothScroll({ children }: SmoothScrollProps) {
         gsap.ticker.lagSmoothing(0);
         document.documentElement.classList.add("lenis", "lenis-smooth");
       } else {
+        let lastScrollY = window.scrollY;
+        let lastScrollTime = performance.now();
+
         nativeScrollHandler = () => {
+          const now = performance.now();
           const el = document.documentElement;
           const max = el.scrollHeight - window.innerHeight;
           const progress = max > 0 ? window.scrollY / max : 0;
           ambientStore.setScrollProgress(Math.min(1, Math.max(0, progress)));
+
+          const dy = Math.abs(window.scrollY - lastScrollY);
+          const dt = Math.max(now - lastScrollTime, 8);
+          const vel = Math.min(1, (dy / dt) * 0.42);
+          if (dy > 0.5) ambientStore.setScrollVelocity(vel);
+
+          lastScrollY = window.scrollY;
+          lastScrollTime = now;
         };
         window.addEventListener("scroll", nativeScrollHandler, { passive: true });
         nativeScrollHandler();

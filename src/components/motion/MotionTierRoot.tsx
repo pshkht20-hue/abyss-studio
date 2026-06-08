@@ -13,6 +13,7 @@ export function MotionTierRoot() {
       root.dataset.motionTier = tier;
       root.classList.toggle("motion-mobile", tier === "mobile" || tier === "mobile-lite");
       root.classList.toggle("motion-mobile-lite", tier === "mobile-lite");
+      root.classList.toggle("motion-ambient", tier === "desktop" || tier === "mobile");
     };
 
     apply();
@@ -34,7 +35,7 @@ export function MotionTierRoot() {
       mqs.forEach((mq) => mq.removeEventListener("change", onChange));
       document.removeEventListener("visibilitychange", onVisibility);
       delete root.dataset.motionTier;
-      root.classList.remove("motion-mobile", "motion-mobile-lite");
+      root.classList.remove("motion-mobile", "motion-mobile-lite", "motion-ambient");
     };
   }, []);
 

@@ -14,7 +14,7 @@ export function SectionPrismAccent({
   className = "",
 }: SectionPrismAccentProps) {
   return (
-    <div className={`section-prism-accent hidden md:block ${className}`} aria-hidden>
+    <div className={`section-prism-accent max-md:scale-75 max-md:opacity-85 ${className}`} aria-hidden>
       <Prism3D size={size} variant={variant} spinDuration={spinDuration} />
     </div>
   );

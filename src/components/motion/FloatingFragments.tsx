@@ -14,6 +14,15 @@ const FRAGMENTS = [
 export function FloatingFragments() {
   const reduced = useReducedMotion();
   const [velocity, setVelocity] = useState(0);
+  const [mobile, setMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setMobile(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   useEffect(() => {
     if (reduced) return;
@@ -25,9 +34,11 @@ export function FloatingFragments() {
 
   if (reduced) return null;
 
+  const visible = mobile ? FRAGMENTS.slice(0, 2) : FRAGMENTS;
+
   return (
-    <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden>
-      {FRAGMENTS.map((f) => (
+    <div className="pointer-events-none absolute inset-0 max-md:opacity-60 md:opacity-100" aria-hidden>
+      {visible.map((f) => (
         <motion.span
           key={f.label}
           className="absolute font-mono text-[10px] tracking-[0.32em] text-mute/40 uppercase"

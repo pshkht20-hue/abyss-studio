@@ -1,18 +1,26 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ambientStore } from "@/lib/ambient-store";
-import { getMotionTier } from "@/lib/motion-tier";
+import { getMotionTier, isAmbientTier } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
 
-const RINGS = [0.18, 0.32, 0.48, 0.64, 0.82] as const;
+const RINGS_DESKTOP = [0.18, 0.32, 0.48, 0.64, 0.82] as const;
+const RINGS_MOBILE = [0.22, 0.42, 0.68] as const;
 
 export function SignalRings() {
   const ref = useRef<HTMLDivElement>(null);
+  const [rings, setRings] = useState<readonly number[]>(RINGS_DESKTOP);
+
+  useEffect(() => {
+    const tier = getMotionTier();
+    setRings(tier === "mobile" ? RINGS_MOBILE : RINGS_DESKTOP);
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || getMotionTier() !== "desktop") return;
+    const tier = getMotionTier();
+    if (!el || !isAmbientTier(tier)) return;
 
     return motionBus.subscribe(() => {
       const { pointer, scrollProgress } = ambientStore;
@@ -26,12 +34,8 @@ export function SignalRings() {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="signal-rings pointer-events-none absolute inset-0 hidden lg:block"
-      aria-hidden
-    >
-      {RINGS.map((size, i) => (
+    <div ref={ref} className="signal-rings pointer-events-none absolute inset-0 max-md:opacity-80" aria-hidden>
+      {rings.map((size, i) => (
         <span
           key={size}
           className="signal-ring"

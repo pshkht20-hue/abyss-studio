@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { ambientStore } from "@/lib/ambient-store";
-
-const STREAK_COUNT = 12;
+import { canRunCanvasAmbient, getMotionTier } from "@/lib/motion-tier";
+import { motionBus } from "@/lib/motion-bus";
 
 export function VelocityStreaks() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -13,13 +13,16 @@ export function VelocityStreaks() {
     if (!canvas) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.matchMedia("(max-width: 767px)").matches;
-    if (reduced || mobile) return;
+    const tier = getMotionTier();
+    if (reduced || !canRunCanvasAmbient(tier)) return;
+
+    const mobile = tier === "mobile";
+    const streakCount = mobile ? 6 : 12;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const streaks = Array.from({ length: STREAK_COUNT }, () => ({
+    const streaks = Array.from({ length: streakCount }, () => ({
       x: Math.random(),
       y: Math.random(),
       len: 0.04 + Math.random() * 0.08,
@@ -27,7 +30,7 @@ export function VelocityStreaks() {
     }));
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio, 1.5);
+      const dpr = mobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
@@ -38,22 +41,21 @@ export function VelocityStreaks() {
     resize();
     window.addEventListener("resize", resize);
 
-    let raf = 0;
-    const draw = () => {
-      raf = requestAnimationFrame(draw);
+    const unsub = motionBus.subscribe(() => {
       if (!ambientStore.visible) return;
 
       const velocity = ambientStore.scrollVelocity;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
       if (velocity < 0.04) {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.clearRect(0, 0, w, h);
         return;
       }
 
-      const w = window.innerWidth;
-      const h = window.innerHeight;
       ctx.clearRect(0, 0, w, h);
 
-      const alpha = velocity * 0.35;
+      const alpha = velocity * (mobile ? 0.28 : 0.35);
       ctx.strokeStyle = `rgba(74, 144, 226, ${alpha})`;
       ctx.lineWidth = 1;
 
@@ -70,11 +72,10 @@ export function VelocityStreaks() {
         ctx.lineTo(x, y + len);
         ctx.stroke();
       });
-    };
+    });
 
-    raf = requestAnimationFrame(draw);
     return () => {
-      cancelAnimationFrame(raf);
+      unsub();
       window.removeEventListener("resize", resize);
     };
   }, []);
@@ -82,7 +83,7 @@ export function VelocityStreaks() {
   return (
     <canvas
       ref={ref}
-      className="pointer-events-none fixed inset-0 z-[1] hidden md:block mix-blend-screen"
+      className="pointer-events-none fixed inset-0 z-[1] mix-blend-screen max-md:opacity-85"
       aria-hidden
     />
   );

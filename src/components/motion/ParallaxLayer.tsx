@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { ambientStore } from "@/lib/ambient-store";
-import { getMotionTier } from "@/lib/motion-tier";
+import { getMotionTier, isAmbientTier } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
 
 type ParallaxLayerProps = {
@@ -16,10 +16,13 @@ export function ParallaxLayer({ children, speed = 0.15, className = "" }: Parall
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || getMotionTier() !== "desktop") return;
+    const tier = getMotionTier();
+    if (!el || !isAmbientTier(tier)) return;
+
+    const k = tier === "mobile" ? 0.65 : 1;
 
     return motionBus.subscribe(() => {
-      const y = ambientStore.scrollProgress * window.innerHeight * speed;
+      const y = ambientStore.scrollProgress * window.innerHeight * speed * k;
       el.style.transform = `translate3d(0, ${y}px, 0)`;
     });
   }, [speed]);

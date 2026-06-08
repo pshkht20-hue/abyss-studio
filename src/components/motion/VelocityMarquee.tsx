@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ambientStore } from "@/lib/ambient-store";
+import { getMotionTier, isMobileTier } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
 
 type VelocityMarqueeProps = {
@@ -20,16 +21,28 @@ export function VelocityMarquee({
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef({ x: 0, velocityBoost: 0, lastVelocity: 0 });
+  const [mobile, setMobile] = useState(false);
 
   useEffect(() => {
+    const apply = () => setMobile(isMobileTier(getMotionTier()));
+    apply();
+    const mqs = [
+      window.matchMedia("(max-width: 767px)"),
+      window.matchMedia("(prefers-reduced-motion: reduce)"),
+    ];
+    mqs.forEach((mq) => mq.addEventListener("change", apply));
+    return () => mqs.forEach((mq) => mq.removeEventListener("change", apply));
+  }, []);
+
+  useEffect(() => {
+    if (mobile) return;
+
     const wrap = wrapRef.current;
     const track = trackRef.current;
     if (!wrap || !track || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
-    const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const velocityScale = mobile ? 0.72 : 1;
     const direction = -1;
     const half = () => track.scrollWidth / 2;
 
@@ -45,7 +58,7 @@ export function VelocityMarquee({
       const halfW = half();
       if (halfW <= 0) return;
 
-      s.x += (baseVelocity * velocityScale * direction + s.velocityBoost * velocityScale) * dt;
+      s.x += (baseVelocity * direction + s.velocityBoost) * dt;
       if (s.x <= -halfW) s.x += halfW;
       if (s.x >= 0) s.x -= halfW;
       track.style.transform = `translate3d(${s.x.toFixed(2)}px,0,0)`;
@@ -61,7 +74,18 @@ export function VelocityMarquee({
       unsub();
       ro.disconnect();
     };
-  }, [baseVelocity, scrollMultiplier]);
+  }, [baseVelocity, scrollMultiplier, mobile]);
+
+  if (mobile) {
+    return (
+      <div className={`overflow-hidden ${className}`}>
+        <div className="flex w-max animate-marquee will-change-transform">
+          {children}
+          {children}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={wrapRef} className={`overflow-hidden ${className}`}>
