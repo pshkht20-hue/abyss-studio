@@ -5,7 +5,6 @@ import {
   useMotionTemplate,
   useReducedMotion,
   useSpring,
-  type MotionValue,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Prism3D } from "@/components/scene3d/Prism3D";
@@ -19,64 +18,6 @@ type Logo3DProps = {
 
 const DEPTH_LAYERS = 5;
 
-function Logo3DContent({
-  size,
-  reduced,
-  interactive,
-  glowPos,
-}: {
-  size: "sm" | "md" | "lg";
-  reduced: boolean;
-  interactive: boolean;
-  glowPos: MotionValue<string>;
-}) {
-  const prismSize = size === "lg" ? "2.5rem" : "1.65em";
-  const spinDuration = size === "lg" ? 32 : 28;
-
-  return (
-    <>
-      <div className="logo-3d-mark" aria-hidden>
-        <span className="logo-3d-mark-mobile" />
-        <span className="logo-3d-mark-desktop">
-          <Prism3D
-            size={prismSize}
-            spinDuration={spinDuration}
-            spin={!reduced}
-            className="logo-prism-wrap"
-          />
-        </span>
-      </div>
-
-      <div className="logo-3d-type">
-        <span className="logo-3d-abyss">
-          {Array.from({ length: DEPTH_LAYERS }, (_, i) => (
-            <span
-              key={i}
-              className="logo-3d-depth"
-              style={{ "--layer": DEPTH_LAYERS - i } as React.CSSProperties}
-            >
-              {site.name}
-            </span>
-          ))}
-          <span className="logo-3d-face">{site.name}</span>
-        </span>
-        <span className="logo-3d-studio-wrap">
-          {interactive ? (
-            <motion.span
-              className="logo-3d-studio logo-3d-studio--gradient"
-              style={{ backgroundPosition: glowPos, backgroundSize: "200% 100%" }}
-            >
-              {site.nameAccent}
-            </motion.span>
-          ) : (
-            <span className="logo-3d-studio">{site.nameAccent}</span>
-          )}
-        </span>
-      </div>
-    </>
-  );
-}
-
 export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3DProps) {
   const reduced = useReducedMotion();
   const [interactive, setInteractive] = useState(false);
@@ -86,7 +27,9 @@ export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3D
   const glowX = useSpring(50, { stiffness: 100, damping: 22 });
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+    const mq = window.matchMedia(
+      "(min-width: 768px) and (prefers-reduced-motion: no-preference) and (hover: hover)",
+    );
     const apply = () => setInteractive(mq.matches);
     apply();
     mq.addEventListener("change", apply);
@@ -117,13 +60,47 @@ export function Logo3D({ showBuild = true, size = "md", className = "" }: Logo3D
   const sizeClass =
     size === "sm" ? "logo-3d--sm" : size === "lg" ? "logo-3d--lg" : "logo-3d--md";
 
+  const prismSize = size === "lg" ? "2.5rem" : "1.65em";
+  const spinDuration = size === "lg" ? 32 : 28;
+
   const inner = (
-    <Logo3DContent
-      size={size}
-      reduced={!!reduced}
-      interactive={interactive}
-      glowPos={glowPos}
-    />
+    <>
+      <div className="logo-3d-mark" aria-hidden>
+        <Prism3D
+          size={prismSize}
+          spinDuration={spinDuration}
+          spin={!reduced}
+          className="logo-prism-wrap"
+        />
+      </div>
+
+      <div className="logo-3d-type">
+        <span className="logo-3d-abyss" aria-hidden="true">
+          {Array.from({ length: DEPTH_LAYERS }, (_, i) => (
+            <span
+              key={i}
+              className="logo-3d-depth"
+              style={{ "--layer": DEPTH_LAYERS - i } as React.CSSProperties}
+            >
+              {site.name}
+            </span>
+          ))}
+          <span className="logo-3d-face">{site.name}</span>
+        </span>
+        <span className="logo-3d-studio-wrap">
+          {interactive ? (
+            <motion.span
+              className="logo-3d-studio"
+              style={{ backgroundPosition: glowPos, backgroundSize: "200% 100%" }}
+            >
+              {site.nameAccent}
+            </motion.span>
+          ) : (
+            <span className="logo-3d-studio">{site.nameAccent}</span>
+          )}
+        </span>
+      </div>
+    </>
   );
 
   return (
