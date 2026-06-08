@@ -10,15 +10,12 @@ export function HexField() {
 
   useEffect(() => {
     const el = ref.current;
-    const tier = getMotionTier();
-    if (!el || !isAmbientTier(tier)) return;
-
-    const k = tier === "mobile" ? 0.55 : 1;
+    if (!el || !isAmbientTier(getMotionTier())) return;
 
     return motionBus.subscribe(() => {
       const { scrollProgress, pointer, scrollVelocity } = ambientStore;
-      const rot = (scrollProgress * 3 + pointer.x * 4) * k;
-      const scale = 1 + scrollVelocity * 0.08 * k;
+      const rot = scrollProgress * 3 + pointer.x * 4;
+      const scale = 1 + scrollVelocity * 0.08;
       el.style.transform = `translate3d(${(pointer.x - 0.5) * -20}px, ${scrollProgress * -80}px, 0) rotate(${rot}deg) scale(${scale})`;
       el.style.opacity = String(0.22 + scrollProgress * 0.12 + scrollVelocity * 0.08);
     });

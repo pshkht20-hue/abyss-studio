@@ -13,8 +13,8 @@ const FRAGMENTS = [
 
 export function FloatingFragments() {
   const reduced = useReducedMotion();
-  const [velocity, setVelocity] = useState(0);
   const [mobile, setMobile] = useState(false);
+  const [velocity, setVelocity] = useState(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -25,19 +25,35 @@ export function FloatingFragments() {
   }, []);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || mobile) return;
     const unsub = ambientStore.subscribe(() => {
       setVelocity(ambientStore.scrollVelocity);
     });
     return unsub;
-  }, [reduced]);
+  }, [reduced, mobile]);
 
   if (reduced) return null;
 
   const visible = mobile ? FRAGMENTS.slice(0, 2) : FRAGMENTS;
 
+  if (mobile) {
+    return (
+      <div className="pointer-events-none absolute inset-0 opacity-40" aria-hidden>
+        {visible.map((f) => (
+          <span
+            key={f.label}
+            className="absolute font-mono text-[10px] tracking-[0.32em] text-mute/35 uppercase"
+            style={{ left: f.x, top: f.y }}
+          >
+            {f.label}
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="pointer-events-none absolute inset-0 max-md:opacity-60 md:opacity-100" aria-hidden>
+    <div className="pointer-events-none absolute inset-0" aria-hidden>
       {visible.map((f) => (
         <motion.span
           key={f.label}

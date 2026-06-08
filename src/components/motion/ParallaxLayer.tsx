@@ -16,10 +16,9 @@ export function ParallaxLayer({ children, speed = 0.15, className = "" }: Parall
 
   useEffect(() => {
     const el = ref.current;
-    const tier = getMotionTier();
-    if (!el || !isAmbientTier(tier)) return;
+    if (!el || !isAmbientTier(getMotionTier())) return;
 
-    const k = tier === "mobile" ? 0.65 : 1;
+    const k = 1;
 
     return motionBus.subscribe(() => {
       const y = ambientStore.scrollProgress * window.innerHeight * speed * k;

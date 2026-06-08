@@ -753,9 +753,19 @@
     background:
       radial-gradient(ellipse 50% 40% at 30% 25%, var(--ambient-primary), transparent 65%),
       radial-gradient(ellipse 45% 38% at 75% 70%, var(--ambient-secondary), transparent 60%);
-    filter: blur(48px);
-    opacity: calc(0.2 + var(--mob-scroll, 0) * 0.12);
-    animation: mesh-drift 18s ease-in-out infinite alternate;
+    opacity: calc(0.22 + var(--mob-scroll, 0) * 0.1);
+    animation: mesh-drift 22s ease-in-out infinite alternate;
+  }
+
+  .ambient-mobile-bloom {
+    position: absolute;
+    inset: 0;
+    opacity: calc(0.18 + var(--mob-scroll, 0) * 0.08);
+    background: radial-gradient(
+      ellipse 80% 60% at 50% 40%,
+      color-mix(in srgb, var(--ambient-glow, var(--ambient-primary)) 12%, transparent),
+      transparent 70%
+    );
   }
 
   .ambient-mobile-grid {
@@ -780,8 +790,7 @@
   .ambient-mobile-orb {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(56px);
-    animation: mobile-orb-drift 14s ease-in-out infinite alternate;
+    animation: mobile-orb-drift 18s ease-in-out infinite alternate;
   }
 
   .ambient-mobile-orb--a {
@@ -1645,6 +1654,20 @@
 @media (max-width: 767px) {
   html.motion-mobile {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  html.motion-mobile .ambient-mobile-mesh,
+  html.motion-mobile .ambient-mobile-orb {
+    filter: none;
+  }
+
+  html.motion-mobile .ambient-mobile-orb--b {
+    opacity: 0.14;
+  }
+
+  html.motion-mobile .prism-3d--spin .prism-cube,
+  html.motion-mobile .prism-3d--spin .prism-diamond {
+    animation: none;
   }
 
   html.motion-mobile .type-display-hero {

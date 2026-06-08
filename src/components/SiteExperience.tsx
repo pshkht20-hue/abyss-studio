@@ -81,6 +81,8 @@ export function SiteExperience() {
 
     setIntroDone(true);
 
+    window.scrollTo(0, 0);
+
     requestAnimationFrame(() => {
 
       registerGsap();

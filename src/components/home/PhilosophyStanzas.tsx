@@ -6,12 +6,10 @@ import { useRef } from "react";
 import { philosophyStanzas } from "@/data/site";
 import { DecryptLine } from "@/components/motion/DecryptLine";
 import { registerGsap } from "@/lib/gsap/register";
-import { scrollScrubValue } from "@/lib/motion-tier";
 
-function buildPhilosophyTimeline(
+function buildPhilosophyPin(
   root: HTMLElement,
   bar: HTMLElement | null,
-  opts: { scrub: number | boolean; anticipatePin: number; endOffset: number },
 ) {
   const stanzas = gsap.utils.toArray<HTMLElement>("[data-stanza]", root);
 
@@ -30,13 +28,12 @@ function buildPhilosophyTimeline(
     scrollTrigger: {
       trigger: root,
       start: "top top",
-      end: () =>
-        `+=${root.offsetHeight * Math.max(stanzas.length - opts.endOffset, 1)}`,
+      end: () => `+=${root.offsetHeight * Math.max(stanzas.length - 0.35, 1)}`,
       pin: true,
       pinType: "fixed",
       pinSpacing: true,
-      scrub: opts.scrub,
-      anticipatePin: opts.anticipatePin,
+      scrub: 0.55,
+      anticipatePin: 1,
       onUpdate: (self) => {
         if (bar) bar.style.transform = `scaleX(${self.progress})`;
       },
@@ -91,24 +88,76 @@ export function PhilosophyStanzas() {
       }
 
       const mm = gsap.matchMedia();
+      const observers: IntersectionObserver[] = [];
 
       mm.add("(min-width: 768px)", () => {
-        buildPhilosophyTimeline(root, bar, {
-          scrub: 0.55,
-          anticipatePin: 1,
-          endOffset: 0.35,
-        });
+        buildPhilosophyPin(root, bar);
       });
 
       mm.add("(max-width: 767px)", () => {
-        buildPhilosophyTimeline(root, bar, {
-          scrub: scrollScrubValue("mobile"),
-          anticipatePin: 0,
-          endOffset: 0.2,
+        const stanzas = gsap.utils.toArray<HTMLElement>("[data-stanza]", root);
+
+        stanzas.forEach((node) => {
+          gsap.set(node, { autoAlpha: 1, clearProps: "visibility" });
+          const chars = node.querySelectorAll(".stanza-char");
+          gsap.set(chars, { yPercent: 20, opacity: 0 });
         });
+
+        const revealStanza = (node: HTMLElement) => {
+          gsap.to(node.querySelectorAll(".stanza-char"), {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.55,
+            stagger: 0.018,
+            ease: "power2.out",
+          });
+        };
+
+        stanzas.forEach((node, i) => {
+          if (i === 0) {
+            revealStanza(node);
+            return;
+          }
+          const obs = new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                revealStanza(node);
+                obs.disconnect();
+              }
+            },
+            { threshold: 0.22, rootMargin: "0px 0px -6% 0px" },
+          );
+          obs.observe(node);
+          observers.push(obs);
+        });
+
+        if (bar) {
+          let revealed = 1;
+          const updateBar = () => {
+            bar.style.transform = `scaleX(${Math.min(1, revealed / stanzas.length)})`;
+          };
+          updateBar();
+          stanzas.forEach((node, i) => {
+            if (i === 0) return;
+            const obs = new IntersectionObserver(
+              ([entry]) => {
+                if (entry.isIntersecting) {
+                  revealed = Math.max(revealed, i + 1);
+                  updateBar();
+                }
+              },
+              { threshold: 0.35 },
+            );
+            obs.observe(node);
+            observers.push(obs);
+          });
+        }
       });
 
-      return () => mm.revert();
+      return () => {
+        observers.forEach((obs) => obs.disconnect());
+        mm.revert();
+      };
     },
     { scope: rootRef },
   );
@@ -116,9 +165,9 @@ export function PhilosophyStanzas() {
   return (
     <section
       id="philosophy"
-      className="philosophy-stanzas relative z-10 min-h-[100dvh] overflow-x-clip overflow-y-visible border-y border-hairline bg-ink"
+      className="philosophy-stanzas relative z-10 overflow-x-clip overflow-y-visible border-y border-hairline bg-ink md:min-h-[100dvh]"
     >
-      <div className="terminal-grid pointer-events-none absolute inset-0 opacity-25 max-md:opacity-15" aria-hidden />
+      <div className="terminal-grid pointer-events-none absolute inset-0 opacity-25 max-md:opacity-12" aria-hidden />
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
@@ -139,13 +188,13 @@ export function PhilosophyStanzas() {
 
       <div
         ref={rootRef}
-        className="philosophy-stanzas-inner relative flex min-h-[calc(100dvh-56px)] items-center justify-center px-4 py-16 md:px-10 md:py-20"
+        className="philosophy-stanzas-inner relative flex flex-col md:min-h-[calc(100dvh-56px)] md:items-center md:justify-center md:px-10 md:py-20"
       >
         {philosophyStanzas.map((stanza, i) => (
           <div
             key={stanza.codename}
             data-stanza
-            className="philosophy-stanza absolute inset-0 flex flex-col items-center justify-center px-4 py-14 text-center md:px-10"
+            className="philosophy-stanza relative flex min-h-[72dvh] flex-col items-center justify-center px-4 py-12 text-center md:absolute md:inset-0 md:min-h-0 md:px-10 md:py-14"
             style={{ visibility: i === 0 ? "visible" : "hidden" }}
           >
             <p className="type-meta-accent mb-6">
@@ -168,15 +217,15 @@ export function PhilosophyStanzas() {
             </h2>
             <DecryptLine
               text={stanza.caption}
-              delay={i * 80}
-              mode="scrub"
+              delay={i * 60}
+              mode="reveal"
               className="stanza-caption mt-8 max-w-xl font-mono text-[11px] leading-relaxed tracking-[0.22em] text-bone/60 uppercase md:text-xs"
             />
           </div>
         ))}
       </div>
 
-      <div className="absolute right-0 bottom-0 left-0 z-10 border-t border-hairline">
+      <div className="relative z-10 border-t border-hairline md:absolute md:right-0 md:bottom-0 md:left-0">
         <div className="flex items-center justify-between px-6 py-3 font-mono text-[10px] tracking-[0.28em] text-bone/70 uppercase md:px-10">
           <span>Reading protocol</span>
           <span className="text-mutation">●</span>

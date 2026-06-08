@@ -7,7 +7,7 @@ import {
   canRunWebGLAmbient,
   getMotionTier,
   isAmbientTier,
-  isLiteAmbientTier,
+  isMobileAmbientTier,
   type MotionTier,
 } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
@@ -59,15 +59,12 @@ export function AmbientBackground() {
     return () => mqs.forEach((mq) => mq.removeEventListener("change", apply));
   }, []);
 
-  const fullAmbient = isAmbientTier(tier);
-  const liteAmbient = isLiteAmbientTier(tier);
+  const desktopAmbient = isAmbientTier(tier);
+  const mobileAmbient = isMobileAmbientTier(tier);
   const webgl = canRunWebGLAmbient(tier);
-  const mobile = tier === "mobile";
 
   useEffect(() => {
-    if (!fullAmbient) return;
-
-    const intensity = mobile ? 0.55 : 1;
+    if (!desktopAmbient) return;
 
     const unsub = motionBus.subscribe(() => {
       const scroll = ambientStore.scrollProgress;
@@ -75,42 +72,37 @@ export function AmbientBackground() {
       const heroLod = ambientStore.heroInView;
 
       if (gridRef.current) {
-        const y = (scroll * -120 - velocity * 40) * intensity;
-        const skew = velocity * 1.2 * intensity;
+        const y = scroll * -120 - velocity * 40;
+        const skew = velocity * 1.2;
         gridRef.current.style.transform = `translate3d(0, ${y}px, 0) skewY(${skew}deg)`;
       }
       if (bloomRef.current) {
-        bloomRef.current.style.opacity = String(
-          0.42 + scroll * 0.18 * intensity + velocity * 0.08 * intensity,
-        );
+        bloomRef.current.style.opacity = String(0.42 + scroll * 0.18 + velocity * 0.08);
       }
       if (vignetteRef.current) {
-        vignetteRef.current.style.opacity = String(0.58 - velocity * 0.06 * intensity);
+        vignetteRef.current.style.opacity = String(0.58 - velocity * 0.06);
       }
       if (horizonRef.current) {
-        horizonRef.current.style.transform = `translate3d(0, ${scroll * 32 * intensity}px, 0) scaleX(${1 + velocity * 0.04 * intensity})`;
-        horizonRef.current.style.opacity = String(0.22 + velocity * 0.18 * intensity);
+        horizonRef.current.style.transform = `translate3d(0, ${scroll * 32}px, 0) scaleX(${1 + velocity * 0.04})`;
+        horizonRef.current.style.opacity = String(0.22 + velocity * 0.18);
       }
 
-      if (webgl) {
-        const lodOpacity = heroLod ? 0.06 : 1;
-        if (webglLodRef.current) {
-          webglLodRef.current.style.opacity = String(lodOpacity);
-          webglLodRef.current.style.pointerEvents = "none";
-        }
-        if (neuralLodRef.current) {
-          neuralLodRef.current.style.opacity = String(heroLod ? 0.04 : 0.92);
-        }
+      const lodOpacity = heroLod ? 0.06 : 1;
+      if (webglLodRef.current) {
+        webglLodRef.current.style.opacity = String(lodOpacity);
+      }
+      if (neuralLodRef.current) {
+        neuralLodRef.current.style.opacity = String(heroLod ? 0.04 : 0.92);
       }
     });
 
     return unsub;
-  }, [fullAmbient, mobile, webgl]);
+  }, [desktopAmbient, webgl]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
-      {liteAmbient && <AmbientMobile />}
-      {fullAmbient && (
+      {mobileAmbient && <AmbientMobile />}
+      {desktopAmbient && (
         <>
           {webgl && (
             <div ref={webglLodRef} className="absolute inset-0 transition-opacity duration-700">
@@ -128,21 +120,18 @@ export function AmbientBackground() {
           <VelocityStreaks />
           <SignalRings />
           <DepthGrid />
-          <div
-            ref={horizonRef}
-            className="horizon-beam absolute inset-x-0 top-[38%] h-px max-md:opacity-70"
-          />
+          <div ref={horizonRef} className="horizon-beam absolute inset-x-0 top-[38%] hidden h-px md:block" />
           <div
             ref={gridRef}
-            className="terminal-grid absolute inset-[-20%] opacity-[0.28] will-change-transform max-md:opacity-[0.18]"
+            className="terminal-grid absolute inset-[-20%] opacity-[0.28] will-change-transform"
           />
           <div ref={bloomRef} className="ambient-bloom absolute inset-0" />
           <ChromaticVeil />
           <div ref={vignetteRef} className="ambient-vignette absolute inset-0" />
         </>
       )}
-      <div className="film-grain absolute inset-0 max-md:opacity-[0.04]" />
-      <div className="scanlines absolute inset-0 opacity-[0.035] max-md:opacity-[0.022]" />
+      <div className="film-grain absolute inset-0 max-md:opacity-[0.025]" />
+      <div className="scanlines absolute inset-0 opacity-[0.035] max-md:opacity-[0.018]" />
     </div>
   );
 }

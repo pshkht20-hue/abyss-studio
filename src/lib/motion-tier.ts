@@ -17,14 +17,18 @@ export function isMobileTier(tier: MotionTier = getMotionTier()) {
   return tier === "mobile" || tier === "mobile-lite";
 }
 
-/** Full CSS/canvas ambient (desktop + capable phones). */
+/** Full animated ambient — desktop only (too heavy on phones). */
 export function isAmbientTier(tier: MotionTier = getMotionTier()) {
-  return tier === "desktop" || tier === "mobile";
+  return tier === "desktop";
 }
 
-/** @deprecated Use isAmbientTier — kept for call-site compat */
 export function isHeavyAmbientTier(tier: MotionTier = getMotionTier()) {
   return isAmbientTier(tier);
+}
+
+/** CSS-only ambient fallback for phones. */
+export function isMobileAmbientTier(tier: MotionTier = getMotionTier()) {
+  return tier === "mobile" || tier === "mobile-lite";
 }
 
 export function isLiteAmbientTier(tier: MotionTier = getMotionTier()) {
@@ -36,24 +40,27 @@ export function canRunWebGLAmbient(tier: MotionTier = getMotionTier()) {
 }
 
 export function canRunCanvasAmbient(tier: MotionTier = getMotionTier()) {
-  return tier === "desktop" || tier === "mobile";
+  return tier === "desktop";
+}
+
+/** ScrollTrigger pin breaks layout on iOS — desktop only. */
+export function shouldUseScrollPin(tier: MotionTier = getMotionTier()) {
+  return tier === "desktop";
 }
 
 export function shouldUseScrollScrub(tier: MotionTier = getMotionTier()) {
-  return tier === "desktop" || tier === "mobile";
+  return tier === "desktop";
 }
 
-/** ScrollTrigger scrub: smooth on desktop, 1:1 on mobile (less GPU work). */
 export function scrollScrubValue(tier: MotionTier = getMotionTier()) {
   if (tier === "desktop") return 0.55;
-  if (tier === "mobile") return true as const;
   return false;
 }
 
 export function getMotionBusFps(tier: MotionTier = getMotionTier()) {
   if (tier === "desktop") return 60;
-  if (tier === "mobile") return 30;
-  return 24;
+  if (tier === "mobile") return 20;
+  return 15;
 }
 
 export function motionTierLabel(tier: MotionTier) {

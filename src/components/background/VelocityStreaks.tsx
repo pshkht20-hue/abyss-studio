@@ -5,6 +5,8 @@ import { ambientStore } from "@/lib/ambient-store";
 import { canRunCanvasAmbient, getMotionTier } from "@/lib/motion-tier";
 import { motionBus } from "@/lib/motion-bus";
 
+const STREAK_COUNT = 12;
+
 export function VelocityStreaks() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -13,16 +15,12 @@ export function VelocityStreaks() {
     if (!canvas) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const tier = getMotionTier();
-    if (reduced || !canRunCanvasAmbient(tier)) return;
-
-    const mobile = tier === "mobile";
-    const streakCount = mobile ? 6 : 12;
+    if (reduced || !canRunCanvasAmbient(getMotionTier())) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const streaks = Array.from({ length: streakCount }, () => ({
+    const streaks = Array.from({ length: STREAK_COUNT }, () => ({
       x: Math.random(),
       y: Math.random(),
       len: 0.04 + Math.random() * 0.08,
@@ -30,7 +28,7 @@ export function VelocityStreaks() {
     }));
 
     const resize = () => {
-      const dpr = mobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
+      const dpr = Math.min(window.devicePixelRatio, 1.5);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
@@ -55,7 +53,7 @@ export function VelocityStreaks() {
 
       ctx.clearRect(0, 0, w, h);
 
-      const alpha = velocity * (mobile ? 0.28 : 0.35);
+      const alpha = velocity * 0.35;
       ctx.strokeStyle = `rgba(74, 144, 226, ${alpha})`;
       ctx.lineWidth = 1;
 
@@ -83,7 +81,7 @@ export function VelocityStreaks() {
   return (
     <canvas
       ref={ref}
-      className="pointer-events-none fixed inset-0 z-[1] mix-blend-screen max-md:opacity-85"
+      className="pointer-events-none fixed inset-0 z-[1] hidden mix-blend-screen md:block"
       aria-hidden
     />
   );

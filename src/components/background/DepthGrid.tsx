@@ -10,15 +10,12 @@ export function DepthGrid() {
 
   useEffect(() => {
     const el = ref.current;
-    const tier = getMotionTier();
-    if (!el || !isAmbientTier(tier)) return;
-
-    const k = tier === "mobile" ? 0.5 : 1;
+    if (!el || !isAmbientTier(getMotionTier())) return;
 
     return motionBus.subscribe(() => {
       const scroll = ambientStore.scrollProgress;
       const velocity = ambientStore.scrollVelocity;
-      const rotX = 68 + (scroll * 12 + velocity * 8) * k;
+      const rotX = 68 + scroll * 12 + velocity * 8;
       const y = scroll * 220 + velocity * 55;
       const scale = 1 + scroll * 0.15;
       el.style.transform = `perspective(1100px) rotateX(${rotX}deg) translate3d(0, ${y}px, 0) scale(${scale})`;

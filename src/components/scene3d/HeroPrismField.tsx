@@ -46,6 +46,7 @@ export function HeroPrismField() {
             size={mobile ? `calc(${p.size} * 0.72)` : p.size}
             variant={p.variant}
             spinDuration={p.dur}
+            spin={!mobile}
           />
         </div>
       ))}

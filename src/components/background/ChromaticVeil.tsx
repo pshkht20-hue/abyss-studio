@@ -10,19 +10,16 @@ export function ChromaticVeil() {
 
   useEffect(() => {
     const el = ref.current;
-    const tier = getMotionTier();
-    if (!el || !isAmbientTier(tier)) return;
-
-    const k = tier === "mobile" ? 0.45 : 1;
+    if (!el || !isAmbientTier(getMotionTier())) return;
 
     return motionBus.subscribe(() => {
       const { pointer, scrollVelocity } = ambientStore;
-      const shift = 1 + scrollVelocity * 4 * k;
+      const shift = 1 + scrollVelocity * 4;
       const px = (pointer.x - 0.5) * shift;
       const py = (pointer.y - 0.5) * shift * 0.4;
       el.style.setProperty("--chroma-x", `${px}px`);
       el.style.setProperty("--chroma-y", `${py}px`);
-      el.style.opacity = String(0.12 + scrollVelocity * 0.1 * k);
+      el.style.opacity = String(0.12 + scrollVelocity * 0.1);
     });
   }, []);
 

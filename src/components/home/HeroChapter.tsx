@@ -34,7 +34,7 @@ export function HeroChapter({ onDistortionReady }: HeroChapterProps) {
     <section
       id="hero"
       data-chapter="HELIX"
-      className="relative min-h-[100dvh] overflow-x-clip overflow-y-visible px-6 pt-10 pb-24 md:px-10 md:pt-14 md:pb-32"
+      className="relative min-h-[calc(100dvh-var(--chrome-height))] overflow-x-clip overflow-y-visible px-6 pt-8 pb-16 md:min-h-[100dvh] md:px-10 md:pt-14 md:pb-32"
     >
       <HeroScrollScene>
         <HeroDistortionField onReady={onDistortionReady} />

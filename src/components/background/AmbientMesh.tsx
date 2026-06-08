@@ -10,17 +10,13 @@ export function AmbientMesh() {
 
   useEffect(() => {
     const el = ref.current;
-    const tier = getMotionTier();
-    if (!el || !isAmbientTier(tier)) return;
-
-    const mobile = tier === "mobile";
-    const k = mobile ? 0.6 : 1;
+    if (!el || !isAmbientTier(getMotionTier())) return;
 
     return motionBus.subscribe(() => {
       const { scrollProgress, pointer, scrollVelocity } = ambientStore;
-      const px = (pointer.x - 0.5) * 18 * k;
-      const py = (pointer.y - 0.5) * 14 * k;
-      const stretch = 1 + scrollVelocity * 0.35 * k;
+      const px = (pointer.x - 0.5) * 18;
+      const py = (pointer.y - 0.5) * 14;
+      const stretch = 1 + scrollVelocity * 0.35;
       el.style.transform = `translate3d(${px}px, ${py + scrollProgress * -60}px, 0) scale(${stretch})`;
       el.style.opacity = String(0.36 + scrollProgress * 0.14 + scrollVelocity * 0.06);
     });

@@ -74,15 +74,17 @@ export function SmoothScroll({ children }: SmoothScrollProps) {
         nativeScrollHandler();
       }
 
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: rootRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: mobile ? 0.2 : 0.5,
-          onUpdate: (self) => ambientStore.setScrollProgress(self.progress),
-        },
-      }).to({}, { duration: 1 });
+      if (!mobile) {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: rootRef.current,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.5,
+            onUpdate: (self) => ambientStore.setScrollProgress(self.progress),
+          },
+        }).to({}, { duration: 1 });
+      }
 
       unsubDecay = motionBus.subscribe(() => {
         const v = ambientStore.scrollVelocity;
